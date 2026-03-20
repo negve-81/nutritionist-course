@@ -85,6 +85,7 @@
   /* Smooth scrolling with Lenis-like feel */
   html {
     scroll-behavior: smooth;
+    position: relative;
   }
   
   /* Custom scrollbar for dark theme */
