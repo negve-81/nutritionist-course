@@ -1,8 +1,17 @@
 "use client"
 
+import { useState } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
-import { Coffee, Wine, Candy, Cigarette, Salad, ArrowDown, Play } from "lucide-react"
+import { Coffee, Wine, Candy, Cigarette, Salad, ArrowDown, Play, User, Mail, Phone, CheckCircle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
 import { useRef } from "react"
 
 const fadeInUp = {
@@ -34,6 +43,11 @@ const topics = [
 
 export function HeroSection() {
   const containerRef = useRef<HTMLElement>(null)
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [form, setForm] = useState({ name: "", email: "", phone: "" })
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
@@ -41,6 +55,28 @@ export function HeroSection() {
   
   const y = useTransform(scrollYProgress, [0, 1], [0, 200])
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+    await new Promise((r) => setTimeout(r, 1500))
+    setLoading(false)
+    setSuccess(true)
+  }
+
+  function handleOpenChange(val: boolean) {
+    setOpen(val)
+    if (!val) {
+      setTimeout(() => {
+        setSuccess(false)
+        setForm({ name: "", email: "", phone: "" })
+      }, 300)
+    }
+  }
 
   return (
     <section ref={containerRef} className="relative min-h-screen flex items-center justify-center overflow-hidden py-20 px-4 noise-bg">
@@ -130,6 +166,7 @@ export function HeroSection() {
               <Button 
                 size="lg" 
                 className="bg-[#c8ff00] hover:bg-[#c8ff00]/90 text-black px-8 py-7 text-lg font-semibold rounded-full glow-lime transition-all duration-500 hover:scale-105 hover:glow-lime-strong group"
+                onClick={() => setOpen(true)}
               >
                 Почати трансформацію
                 <motion.span
@@ -144,9 +181,12 @@ export function HeroSection() {
                 size="lg" 
                 variant="outline" 
                 className="border-white/20 text-white hover:bg-white/10 hover:border-[#c8ff00]/50 px-8 py-7 text-lg rounded-full transition-all duration-300 group"
+                asChild
               >
-                <Play className="w-5 h-5 mr-2 group-hover:text-[#c8ff00] transition-colors" />
-                Дивитись трейлер
+                <a href="https://www.instagram.com/reels/DHGzRB1NKDO/" target="_blank" rel="noopener noreferrer">
+                  <Play className="w-5 h-5 mr-2 group-hover:text-[#c8ff00] transition-colors" />
+                  Дивитись трейлер
+                </a>
               </Button>
             </motion.div>
 
@@ -279,6 +319,104 @@ export function HeroSection() {
           <ArrowDown className="w-5 h-5 text-white/40 group-hover:text-[#c8ff00] transition-colors" />
         </motion.div>
       </motion.div>
+
+      {/* Contact Form Modal */}
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-2xl border border-white/10 bg-[#141414]">
+          {success ? (
+            <motion.div
+              className="flex flex-col items-center justify-center py-14 px-8 text-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="w-20 h-20 rounded-full bg-[#c8ff00]/10 border border-[#c8ff00]/20 flex items-center justify-center mb-6">
+                <CheckCircle className="w-10 h-10 text-[#c8ff00]" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">Дякуємо!</h3>
+              <p className="text-white/60 leading-relaxed">
+                Ваша заявка прийнята. Ми зв{"'"}яжемося з вами найближчим часом і надішлемо деталі на вказану пошту.
+              </p>
+              <Button
+                className="mt-8 bg-[#c8ff00] hover:bg-[#c8ff00]/90 text-black rounded-full px-8 font-semibold"
+                onClick={() => handleOpenChange(false)}
+              >
+                Закрити
+              </Button>
+            </motion.div>
+          ) : (
+            <>
+              <div className="bg-gradient-to-br from-[#1f1f1f] to-[#141414] px-8 pt-8 pb-6 border-b border-white/10">
+                <DialogHeader>
+                  <DialogTitle className="text-white text-xl font-bold text-center">
+                    Почати трансформацію
+                  </DialogTitle>
+                  <DialogDescription className="text-white/50 text-center text-sm mt-1">
+                    Залиште свої дані — ми зв{"'"}яжемося з вами для консультації
+                  </DialogDescription>
+                </DialogHeader>
+              </div>
+
+              <form onSubmit={handleSubmit} className="px-8 py-6 space-y-4 bg-[#141414]">
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <Input
+                    name="name"
+                    placeholder="Ваше ім'я"
+                    required
+                    value={form.name}
+                    onChange={handleChange}
+                    className="pl-10 h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-white/40 focus-visible:border-[#c8ff00]/50 focus-visible:ring-[#c8ff00]/20"
+                  />
+                </div>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <Input
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    required
+                    value={form.email}
+                    onChange={handleChange}
+                    className="pl-10 h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-white/40 focus-visible:border-[#c8ff00]/50 focus-visible:ring-[#c8ff00]/20"
+                  />
+                </div>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <Input
+                    name="phone"
+                    type="tel"
+                    placeholder="Номер телефону"
+                    required
+                    value={form.phone}
+                    onChange={handleChange}
+                    className="pl-10 h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-white/40 focus-visible:border-[#c8ff00]/50 focus-visible:ring-[#c8ff00]/20"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full h-12 bg-[#c8ff00] hover:bg-[#c8ff00]/90 text-black rounded-full text-base font-semibold glow-lime transition-all duration-500 hover:scale-[1.02] disabled:opacity-70 disabled:scale-100 mt-2"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Відправляємо...
+                    </>
+                  ) : (
+                    "Відправити заявку"
+                  )}
+                </Button>
+
+                <p className="text-xs text-center text-white/30 leading-relaxed">
+                  Натискаючи кнопку, ви погоджуєтесь з умовами використання та політикою конфіденційності
+                </p>
+              </form>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }
