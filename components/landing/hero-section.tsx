@@ -216,8 +216,8 @@ export function HeroSection() {
               {/* Main image container */}
               <div className="relative z-10 rounded-3xl overflow-hidden border border-white/10">
                 <img 
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_5381966773965944806_y%20%281%29-8uB6gRKtC3oUWznakOtdiuJvXo5G2X.jpg"
-                  alt="Володимир Цоуфал - Нутриціолог та експерт з питань здоров'я"
+                  src="/hero-specialist.jpg"
+                  alt="Клінічний нутриціолог - Експерт з нейтралізації шкідливих звичок"
                   className="w-full h-auto object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/60 via-transparent to-transparent" />
